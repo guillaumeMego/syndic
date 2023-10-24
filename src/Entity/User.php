@@ -10,6 +10,10 @@ use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+
+
 #[UniqueEntity('email')]
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\EntityListeners(['App\EntityListener\UserListener'])]
@@ -38,8 +42,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private string $adresse;
 
     #[ORM\Column]
-    #[Assert\NotNull()]
+    #[Assert\NotNull]
     private array $roles = [];
+
+    #[ORM\Column(type: Types::BOOLEAN)]
+    private bool $conseil = false;
 
     private ?string $plainPassword = null;
 
@@ -58,10 +65,56 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Assert\NotNull()]
     private \DateTimeImmutable $date_modif;
 
+    #[ORM\OneToMany(targetEntity: Problematiques::class, mappedBy: 'auteur')]
+    private $problematiques;
+
     public function __construct()
     {
+        $this->problematiques = new ArrayCollection();
         $this->date_ajout = new \DateTimeImmutable();
         $this->date_modif = new \DateTimeImmutable();
+        $this->roles = ['ROLE_USER'];
+        $this->conseil = false;
+    }
+
+
+    public function isConseil(): bool
+    {
+        return $this->conseil;
+    }
+
+    public function setConseil(bool $conseil): static
+    {
+        $this->conseil = $conseil;
+
+        return $this;
+    }
+
+    public function getProblematiques(): Collection
+    {
+        return $this->problematiques;
+    }
+
+    public function addProblematique(Problematiques $problematique): self
+    {
+        if (!$this->problematiques->contains($problematique)) {
+            $this->problematiques[] = $problematique;
+            $problematique->setAuteur($this);
+        }
+
+        return $this;
+    }
+
+    public function removeProblematique(Problematiques $problematique): self
+    {
+        if ($this->problematiques->removeElement($problematique)) {
+            // set the owning side to null (unless already changed)
+            if ($problematique->getAuteur() === $this) {
+                $problematique->setAuteur(null);
+            }
+        }
+
+        return $this;
     }
 
     /**
@@ -138,14 +191,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    /**
-     * @see UserInterface
-     */
     public function getRoles(): array
     {
         $roles = $this->roles;
-        // guarantee every user at least has ROLE_USER
-        $roles[] = 'ROLE_USER';
+        $roles[] = 'ROLE_LOCATAIRE';
 
         return array_unique($roles);
     }

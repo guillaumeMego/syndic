@@ -9,6 +9,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
@@ -89,70 +90,86 @@ class RegistrationType extends AbstractType
                     ]),
                 ]
             ])
-            ->add('adresse',
-            TextareaType::class,
-            [
-                'attr' => [
-                    'placeholder' => 'Entrez une adresse',
-                    'class' => 'form-control',
+            ->add(
+                'adresse',
+                TextareaType::class,
+                [
+                    'attr' => [
+                        'placeholder' => 'Entrez une adresse',
+                        'class' => 'form-control',
+                    ],
+                    'label' => 'Adresse',
+                    'label_attr' => [
+                        'class' => 'form-label mt-2'
+                    ],
+                    'constraints' => [
+                        new Assert\NotBlank([
+                            'message' => 'L\'adresse est obligatoire'
+                        ])
+                    ]
+                ]
+            )
+            ->add('roles', ChoiceType::class, [
+                'label' => 'Rôle',
+                'choices' => [
+                    'Propriétaire' => 'ROLE_PROPRIETAIRE',
+                    'Locataire' => 'ROLE_LOCATAIRE',
                 ],
-                'label' => 'Adresse',
+                'attr' => [
+                    'class' => 'form-select',
+                ],
                 'label_attr' => [
                     'class' => 'form-label mt-2'
                 ],
-                'constraints' => [
-                    new Assert\NotBlank([
-                        'message' => 'L\'adresse est obligatoire'
-                    ])
-                ]
-            ]
-        )
-            ->add('plainPassword', RepeatedType::class,
-            [
-                'type' => PasswordType::class,
-                'invalid_message' => 'Les mots de passe doivent être identiques',
-                'first_options' => [
-                    'label' => 'Mot de passe',
-                    'label_attr' => [
-                        'class' => 'form-label mt-2'
+                'multiple' => true,
+            ])
+            ->add(
+                'plainPassword',
+                RepeatedType::class,
+                [
+                    'type' => PasswordType::class,
+                    'invalid_message' => 'Les mots de passe doivent être identiques',
+                    'first_options' => [
+                        'label' => 'Mot de passe',
+                        'label_attr' => [
+                            'class' => 'form-label mt-2'
+                        ],
+                        'attr' => [
+                            'placeholder' => 'Entrez un mot de passe',
+                            'class' => 'form-control',
+                            'minlength' => '12',
+                            'maxlength' => '255'
+                        ],
                     ],
-                    'attr' => [
-                        'placeholder' => 'Entrez un mot de passe',
-                        'class' => 'form-control',
-                        'minlength' => '12',
-                        'maxlength' => '255'
+                    'second_options' => [
+                        'attr' => [
+                            'placeholder' => 'Entrez un mot de passe',
+                            'class' => 'form-control',
+                            'minlength' => '12',
+                            'maxlength' => '255'
+                        ],
+                        'label' => 'Confirmation du mot de passe',
+                        'label_attr' => [
+                            'class' => 'form-label mt-2'
+                        ],
                     ],
+                    'constraints' => [
+                        new Assert\Regex([
+                            'pattern' => '/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*\W).{12,}$/',
+                            'message' => 'Le mot de passe doit contenir au moins 12 caractères, une majuscule, une minuscule, un chiffre et un caractère spécial'
+                        ]),
+                        new Assert\NotBlank([
+                            'message' => 'Le mot de passe est obligatoire'
+                        ])
+                    ]
                 ],
-                'second_options' => [
-                    'attr' => [
-                        'placeholder' => 'Entrez un mot de passe',
-                        'class' => 'form-control',
-                        'minlength' => '12',
-                        'maxlength' => '255'
-                    ],
-                    'label' => 'Confirmation du mot de passe',
-                    'label_attr' => [
-                        'class' => 'form-label mt-2'
-                    ],
-                ],
-                'constraints' => [
-                    new Assert\Regex([
-                        'pattern' => '/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*\W).{12,}$/',
-                        'message' => 'Le mot de passe doit contenir au moins 12 caractères, une majuscule, une minuscule, un chiffre et un caractère spécial'
-                    ]),
-                    new Assert\NotBlank([
-                        'message' => 'Le mot de passe est obligatoire'
-                    ])
-                ]
-            ],
-        )
+            )
             ->add('submit', SubmitType::class, [
                 'label' => 'S\'inscrire',
                 'attr' => [
                     'class' => 'btn btn-primary btn-block mt-4'
                 ]
-            ])
-        ;
+            ]);
     }
 
     /**

@@ -35,7 +35,7 @@ class UserController extends AbstractController
 
         if($this->getUser() !== $user)
         {
-            return $this->redirectToRoute('app_habitants');
+            return $this->redirectToRoute('home.index');
         }
 
         $form = $this->createForm(UserType::class, $user);
@@ -44,13 +44,14 @@ class UserController extends AbstractController
         if($form->isSubmitted() && $form->isValid())
         {
             $user = $form->getData();
+            $user->setDateModif(new \DateTimeImmutable());
             $manager->persist($user);
 
             $manager->flush();
 
             $this->addFlash('success', 'Votre profil a bien été modifié');
 
-            return $this->redirectToRoute('app_habitants');
+            return $this->redirectToRoute('home.index');
         }
 
         return $this->render('pages/user/edit.html.twig', [
@@ -81,7 +82,7 @@ class UserController extends AbstractController
 
         if($this->getUser() !== $user)
         {
-            return $this->redirectToRoute('app_habitants');
+            return $this->redirectToRoute('home.index');
         }
 
         $form = $this->createForm(UserPasswordType::class);
@@ -98,7 +99,7 @@ class UserController extends AbstractController
                 $manager->flush();
                 $this->addFlash('success', 'Votre mot de passe a bien été modifié');
 
-                return $this->redirectToRoute('app_habitants');
+                return $this->redirectToRoute('home.index');
             }
             else
             {

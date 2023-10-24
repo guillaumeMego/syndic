@@ -8,6 +8,7 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 
@@ -77,6 +78,23 @@ class UserType extends AbstractType
                     ]
                 ]
             )
+            ->add('conseil', ChoiceType::class, [
+                'label' => 'Membre du conseil',
+                'label_attr' => [
+                    'class' => 'form-label mt-2'
+                ],
+                'attr' => [
+                    'class' => 'form-control mt-2'
+                ],
+                'choices' => [
+                    'Oui' => true,
+                    'Non' => false,
+                ],
+                'expanded' => true,
+                'multiple' => false,
+                'required' => true,
+            ])
+            
             ->add('submit', SubmitType::class, [
                 'label' => 'Modifier',
                 'attr' => [

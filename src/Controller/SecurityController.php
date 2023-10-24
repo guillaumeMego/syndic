@@ -22,7 +22,7 @@ class SecurityController extends AbstractController
     #[Route('/connexion', name: 'app_login', methods: ['GET', 'POST'])]
     public function login(AuthenticationUtils $authenticationUtils): Response
     {
-        
+
         return $this->render('pages/security/login.html.twig', [
             'last_Username' => $authenticationUtils->getLastUsername(),
             'error' => $authenticationUtils->getLastAuthenticationError()
@@ -47,26 +47,36 @@ class SecurityController extends AbstractController
      * @return Response
      */
     #[Route('/inscription', name: 'app_registration', methods: ['GET', 'POST'])]
-    public function registration(Request $request, EntityManagerInterface $manager): Response
-    {
-        $user = new User(); 
-        $form = $this->createForm(RegistrationType::class, $user);
+    // SecurityController.php
 
-        $form->handleRequest($request);
-        if($form->isSubmitted() && $form->isValid())
-        {
-            // role
-            $user->setRoles(['ROLE_USER']);
-            $user = $form->getData();
-            
-            $manager->persist($user);
-            $manager->flush();
+public function registration(Request $request, EntityManagerInterface $manager): Response
+{
+    $user = new User();
+    $form = $this->createForm(RegistrationType::class, $user);
 
-            $this->addFlash("success", "Votre compte a bien été créé");
-            return $this->redirectToRoute('app_login');
+    $form->handleRequest($request);
+    
+    if ($form->isSubmitted() && $form->isValid()) {
+        $user = $form->getData();
+
+        if($form->get('roles')->getData() == 'ROLE_PROPRIETAIRE'){
+            $user->setRoles(['ROLE_PROPRIETAIRE']);
+        }else{
+            $user->setRoles(['ROLE_LOCATAIRE']);
         }
-        return $this->render('pages/security/registration.html.twig', [
-            'form' => $form->createView()
-        ]);
+            
+    
+
+        $manager->persist($user);
+        $manager->flush();
+
+        $this->addFlash("success", "Votre compte a bien été créé");
+        return $this->redirectToRoute('app_login');
     }
+
+    return $this->render('pages/security/registration.html.twig', [
+        'form' => $form->createView()
+    ]);
+}
+
 }

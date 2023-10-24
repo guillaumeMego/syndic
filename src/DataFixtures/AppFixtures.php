@@ -7,7 +7,6 @@ use Doctrine\Persistence\ObjectManager;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Faker\Factory;
 use Faker\Generator;
-use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class AppFixtures extends Fixture
 {
@@ -22,21 +21,20 @@ class AppFixtures extends Fixture
     }
 
     public function load(ObjectManager $manager): void
-    {
-        for($i = 0; $i < 10; $i++){
-            $user = new User();
-            $user->setNom($this->faker->lastName());
-            $user->setPrenom($this->faker->firstName());
-            $user->setEmail($this->faker->email());
-            $user->setRoles(['ROLE_USER']);
-            $user->setAdresse($this->faker->address());
-            $user->setPlainPassword('password');
-        
+{
+    for($i = 0; $i < 10; $i++) {
+        $user = new User();
+        $user->setNom($this->faker->lastName());
+        $user->setPrenom($this->faker->firstName());
+        $user->setEmail($this->faker->email());
+        $user->setAdresse($this->faker->address());
+        $user->setPlainPassword('password');
 
-            $manager->persist($user);
-        }
-        $manager->flush();
-
-        
+        $manager->persist($user);
     }
+
+    $manager->flush();
+}
+
+
 }
