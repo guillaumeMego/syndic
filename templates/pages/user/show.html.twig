@@ -1,0 +1,68 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Syndic - Utilisateus{% endblock %}
+
+{% block body %}
+<div class="container">
+    {# affichage de tout les utilisateur sous forme de tableau #}
+    <h1 class="mt-4">Liste des habitants</h1>
+
+    {% for message in app.flashes('success') %}
+    <div class="alert alert-success" role="alert">
+        {{ message }}
+    </div>
+    {% endfor %}
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th scope="col">Nom</th>
+                <th scope="col">Prenom</th>
+                <th scope="col">Email</th>
+                <th scope="col">adresse</th>
+                <th scope="col">Locataire/Proprietaire</th>
+                <th scope="col">Membre du conseil</th>
+
+            </tr>
+        </thead>
+        <tbody>
+            {% for user in users %}
+            <tr>
+                <td>{{user.nom}}</td>
+                <td>{{user.prenom}}</td>
+                <td>{{user.email}}</td>
+                <td>{{user.adresse}}</td>
+                {# Afficher juste locataire ou proprietaire selon le role #}
+                {% if user.roles[0] == "ROLE_LOCATAIRE" %}
+                <td>Locataire</td>
+                {% else %}
+                <td>Proprietaire</td>
+                {% endif %}
+                {% set hasConseilRole = false %}
+                {% for role in user.roles %}
+                {% if role == 'ROLE_CONSEIL' %}
+                {% set hasConseilRole = true %}
+                {% endif %}
+                {% endfor %}
+
+                {% if hasConseilRole %}
+                <td>Oui</td>
+                {% else %}
+                <td>Non</td>
+                {% endif %}
+                {% if is_granted('ROLE_CONSEIL') %}
+                <td>
+                    <a href="{{path('app_edit', {'id': user.id})}}" class="btn btn-secondary">Editer</a>
+                </td>
+                <td>
+                    <a href="{{path('supprimer_utilisateur', {'id': user.id})}}" class="btn btn-danger">Supprimer</a>
+                </td>
+                {% endif %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <div class="navigation">
+        {{ knp_pagination_render(users) }}
+    </div>
+</div>
+{% endblock %}

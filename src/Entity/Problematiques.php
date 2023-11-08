@@ -9,9 +9,6 @@ use Symfony\Component\Validator\Constraints as Assert;
 use App\Entity\User;
 use App\Entity\SuiviProblematique;
 
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
-
 
 #[ORM\Entity(repositoryClass: ProblematiquesRepository::class)]
 class Problematiques
@@ -34,16 +31,10 @@ class Problematiques
     #[ORM\Column(type: Types::DATE_IMMUTABLE)]
     private ?\DateTimeImmutable $date_modif = null;
 
-    #[ORM\Column(length: 50)]
-    private ?string $etat = null;
-
-    /**
-     * @ORM\OneToMany(targetEntity=SuiviProblematique::class, mappedBy="problematique")
-     */
-    #[ORM\OneToMany(targetEntity: SuiviProblematique::class, mappedBy: 'problematique')]
+    #[ORM\OneToOne(targetEntity: SuiviProblematique::class, mappedBy: 'problematique', cascade: ['persist', 'remove'])]
     private $suiviProblematiques;
 
-     /**
+    /**
      * @ORM\ManyToOne(targetEntity=User::class, inversedBy="problematiques")
      * @ORM\JoinColumn(nullable=false)
      */
@@ -52,6 +43,13 @@ class Problematiques
     private $auteur;
 
     // ...
+
+    public function __construct()
+    {
+        $this->date_ajout = new \DateTimeImmutable();
+        $this->date_modif = new \DateTimeImmutable();
+    }
+
 
     public function getAuteur(): ?User
     {
@@ -65,13 +63,6 @@ class Problematiques
         return $this;
     }
 
-    /**
-     * @return Collection|SuiviProblematique[]
-     */
-    public function getSuiviProblematiques(): Collection
-    {
-        return $this->suiviProblematiques;
-    }
 
     public function addSuiviProblematique(SuiviProblematique $suiviProblematique): self
     {
@@ -94,7 +85,6 @@ class Problematiques
 
         return $this;
     }
-    
 
     public function getId(): ?int
     {
@@ -149,15 +139,12 @@ class Problematiques
         return $this;
     }
 
-    public function getEtat(): ?string
-    {
-        return $this->etat;
-    }
 
-    public function setEtat(string $etat): static
+    /**
+     * Get the value of suiviProblematiques
+     */ 
+    public function getSuiviProblematique()
     {
-        $this->etat = $etat;
-
-        return $this;
+        return $this->suiviProblematiques;
     }
 }

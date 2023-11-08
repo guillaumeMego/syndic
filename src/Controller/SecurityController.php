@@ -9,6 +9,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
 class SecurityController extends AbstractController
@@ -23,6 +24,9 @@ class SecurityController extends AbstractController
     public function login(AuthenticationUtils $authenticationUtils): Response
     {
 
+        if ($this->getUser()) {
+            return $this->redirectToRoute('groupe_page');
+        }
         return $this->render('pages/security/login.html.twig', [
             'last_Username' => $authenticationUtils->getLastUsername(),
             'error' => $authenticationUtils->getLastAuthenticationError()
@@ -47,36 +51,35 @@ class SecurityController extends AbstractController
      * @return Response
      */
     #[Route('/inscription', name: 'app_registration', methods: ['GET', 'POST'])]
-    // SecurityController.php
+    #[IsGranted('ROLE_CONSEIL')]
+    public function registration(Request $request, EntityManagerInterface $manager): Response
+    {
+        $user = new User();
+        $form = $this->createForm(RegistrationType::class, $user);
 
-public function registration(Request $request, EntityManagerInterface $manager): Response
-{
-    $user = new User();
-    $form = $this->createForm(RegistrationType::class, $user);
+        $form->handleRequest($request);
 
-    $form->handleRequest($request);
-    
-    if ($form->isSubmitted() && $form->isValid()) {
-        $user = $form->getData();
+        if ($form->isSubmitted() && $form->isValid()) {
+            $user = $form->getData();
 
-        if($form->get('roles')->getData() == 'ROLE_PROPRIETAIRE'){
-            $user->setRoles(['ROLE_PROPRIETAIRE']);
-        }else{
-            $user->setRoles(['ROLE_LOCATAIRE']);
+            if ($form->get('roles')->getData() == 'ROLE_PROPRIETAIRE') {
+                $user->setRoles(['ROLE_PROPRIETAIRE']);
+            } else {
+                $user->setRoles(['ROLE_LOCATAIRE']);
+            }
+
+
+
+            $manager->persist($user);
+            $manager->flush();
+
+            $this->addFlash("success", "Votre compte a bien été créé");
+            return $this->redirectToRoute('app_login');
         }
-            
-    
 
-        $manager->persist($user);
-        $manager->flush();
-
-        $this->addFlash("success", "Votre compte a bien été créé");
-        return $this->redirectToRoute('app_login');
+        return $this->render('pages/security/registration.html.twig', [
+            'form' => $form->createView(),
+            'user' => $user
+        ]);
     }
-
-    return $this->render('pages/security/registration.html.twig', [
-        'form' => $form->createView()
-    ]);
-}
-
 }

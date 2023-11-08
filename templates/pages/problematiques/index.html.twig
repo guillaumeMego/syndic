@@ -1,0 +1,97 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Syndic - Utilisateus{% endblock %}
+
+{% block body %}
+<div class="container">
+    <h1 class="display-4 mt-3">Problematiques</h1>
+    {% for message in app.flashes('success') %}
+    <div class="alert alert-success" role="alert">
+        {{ message }}
+    </div>
+    {% endfor %}
+
+    <a href="{{ path('app_problematiques_new') }}" class="btn btn-primary mb-2">Ajouter une problématique</a>
+    {% if is_granted('ROLE_CONSEIL') %}
+    <h2>Problématiques en attente de validation</h2>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th scope="col">Problématique</th>
+                <th scope="col">Description</th>
+                <th scope="col">Déclaré par</th>
+                <th scope="col">Date de déclaration</th>
+                <th scope="col">Modifié le</th>
+                <th scope="col">Statut</th>
+
+                {% if is_granted('ROLE_CONSEIL') %}
+                <th scope="col">Valider</th>
+                {% endif %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in problematiques %}
+            {% if item.suiviProblematique is not null and item.suiviProblematique.etat == 'En attente de validation' %}
+            <tr>
+                <td>{{ item.problematique.problematique }}</td>
+                <td>{{ item.problematique.description }}</td>
+                <td>{{ item.auteur.prenom ~ ' ' ~ item.auteur.nom }}</td>
+                <td>{{ item.problematique.dateAjout|date('d/m/Y') }}</td>
+                <td>{{ item.problematique.dateModif|date('d/m/Y') }}</td>
+                <td>{{ item.suiviProblematique.etat }}</td>
+                {% if is_granted('ROLE_CONSEIL') %}
+                <td>
+                    <a href="{{ path('app_problematiques_validate', {'id': item.problematique.id}) }}"
+                        class="btn btn-success">Valider</a>
+                {% endif %}
+            </tr>
+            {% endif %}
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <h2>Autres Problématiques</h2>
+    {% endif %}
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th scope="col">Problématique</th>
+                <th scope="col">Description</th>
+                <th scope="col">Déclaré par</th>
+                <th scope="col">Date de déclaration</th>
+                <th scope="col">Modifié le</th>
+                <th scope="col">Statut</th>
+                {% if is_granted('ROLE_CONSEIL') %}
+                <th scope="col">Editer</th>
+                <th scope="col">Supprimer</th>
+                {% endif %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in problematiques %}
+            {% if item.suiviProblematique.etat != 'En attente de validation' %}
+            <tr>
+                <td>{{ item.problematique.problematique }}</td>
+                <td>{{ item.problematique.description }}</td>
+                <td>{{ item.auteur.prenom ~ ' ' ~ item.auteur.nom }}</td>
+                <td>{{ item.problematique.dateAjout|date('d/m/Y') }}</td>
+                <td>{{ item.problematique.dateModif|date('d/m/Y') }}</td>
+                <td>{{ item.suiviProblematique.etat }}</td>
+                {% if is_granted('ROLE_CONSEIL') %}
+                <td>
+                    <a href="{{ path('app_problematiques_edit', {'id': item.problematique.id}) }}"
+                        class="btn btn-secondary">Editer</a>
+                </td>
+                <td>
+                    <a href="{{ path('app_problematiques_delete', {'id': item.problematique.id}) }}"
+                        class="btn btn-danger">Supprimer</a>
+                </td>
+                {% endif %}
+            </tr>
+            {% endif %}
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}

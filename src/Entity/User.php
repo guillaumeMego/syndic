@@ -45,9 +45,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Assert\NotNull]
     private array $roles = [];
 
-    #[ORM\Column(type: Types::BOOLEAN)]
-    private bool $conseil = false;
-
     private ?string $plainPassword = null;
 
     /**
@@ -73,21 +70,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->problematiques = new ArrayCollection();
         $this->date_ajout = new \DateTimeImmutable();
         $this->date_modif = new \DateTimeImmutable();
-        $this->roles = ['ROLE_USER'];
-        $this->conseil = false;
-    }
-
-
-    public function isConseil(): bool
-    {
-        return $this->conseil;
-    }
-
-    public function setConseil(bool $conseil): static
-    {
-        $this->conseil = $conseil;
-
-        return $this;
     }
 
     public function getProblematiques(): Collection
@@ -194,10 +176,29 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function getRoles(): array
     {
         $roles = $this->roles;
-        $roles[] = 'ROLE_LOCATAIRE';
 
         return array_unique($roles);
     }
+
+    public function removeRole(string $role): static
+    {
+        $key = array_search($role, $this->roles, true);
+        if ($key !== false) {
+            unset($this->roles[$key]);
+        }
+
+        return $this;
+    }
+
+    public function addRole(string $role): static
+    {
+        if (!in_array($role, $this->roles, true)) {
+            $this->roles[] = $role;
+        }
+
+        return $this;
+    }
+
 
     public function setRoles(array $roles): static
     {

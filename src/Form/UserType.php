@@ -78,23 +78,17 @@ class UserType extends AbstractType
                     ]
                 ]
             )
-            ->add('conseil', ChoiceType::class, [
-                'label' => 'Membre du conseil',
+            ->add('roles', ChoiceType::class, [
+                'choices' => [
+                    'oui' => 'ROLE_CONSEIL',
+                ],
+                'expanded' => true,
+                'multiple' => true,
+                'label' => 'Membre du conseil ?',
                 'label_attr' => [
                     'class' => 'form-label mt-2'
                 ],
-                'attr' => [
-                    'class' => 'form-control mt-2'
-                ],
-                'choices' => [
-                    'Oui' => true,
-                    'Non' => false,
-                ],
-                'expanded' => true,
-                'multiple' => false,
-                'required' => true,
             ])
-            
             ->add('submit', SubmitType::class, [
                 'label' => 'Modifier',
                 'attr' => [

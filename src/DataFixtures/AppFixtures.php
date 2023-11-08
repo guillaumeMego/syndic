@@ -22,7 +22,33 @@ class AppFixtures extends Fixture
 
     public function load(ObjectManager $manager): void
 {
-    for($i = 0; $i < 10; $i++) {
+    // Créer 10 propriétaires
+        for ($i = 0; $i < 10; $i++) {
+            $user = $this->createUser();
+            $user->setRoles(['ROLE_PROPRIETAIRE']);
+            $manager->persist($user);
+        }
+
+        // Créer 2 propriétaires membres du conseil
+        for ($i = 0; $i < 2; $i++) {
+            $user = $this->createUser();
+            $user->setRoles(['ROLE_PROPRIETAIRE', 'ROLE_CONSEIL']);
+            $manager->persist($user);
+        }
+
+        // Créer 48 locataires
+        for ($i = 0; $i < 48; $i++) {
+            $user = $this->createUser();
+            $user->setRoles(['ROLE_LOCATAIRE']);
+            $manager->persist($user);
+        }
+
+        $manager->flush();
+
+        
+}
+private function createUser()
+    {
         $user = new User();
         $user->setNom($this->faker->lastName());
         $user->setPrenom($this->faker->firstName());
@@ -30,11 +56,7 @@ class AppFixtures extends Fixture
         $user->setAdresse($this->faker->address());
         $user->setPlainPassword('password');
 
-        $manager->persist($user);
+        return $user;
     }
-
-    $manager->flush();
-}
-
 
 }

@@ -19,8 +19,14 @@ security:
             form_login:
                 login_path: app_login
                 check_path: app_login
+                default_target_path: app_login
             logout:
                 path: app_logout
+    role_hierarchy:
+        ROLE_LOCATAIRE: []
+        ROLE_PROPRIETAIRE: [ROLE_LOCATAIRE]
+        ROLE_CONSEIL: [ROLE_PROPRIETAIRE]
+
 
 
             # activate different ways to authenticate
@@ -32,6 +38,7 @@ security:
     # Easy way to control access for large sections of your site
     # Note: Only the *first* access control that matches will be used
     access_control:
+        # - { path: ^/utilisateur/afficher, roles: ROLE_CONSEIL }
         # - { path: ^/admin, roles: ROLE_ADMIN }
         # - { path: ^/profile, roles: ROLE_USER }
 
