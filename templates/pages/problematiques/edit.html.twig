@@ -1,19 +1,24 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Syndic - Problematiques{% endblock %}
+{% block title %}Syndic - Edition Problematiques{% endblock %}
 
 {% block body %}
 <div class="container">
-    {# affichage de tout les utilisateur sous forme de tableau #}
-    <h1 class="mt-4">Edition d'une problematique</h1>
-        {{ form_start(form) }}
+    <h1 class="display-4 text-secondary my-4">Modifier une problematique</h1>
+    <hr>
+    {% for message in app.flashes('error') %}
+    <div class="alert alert-danger" role="alert">
+        {{ message }}
+    </div>
+    {% endfor %}
+    {{ form_start(form) }}
+    <div class="mb-2">
 
-        {# Affichage des champs du formulaire, à l'exception du bouton de soumission #}
-        {{ form_row(form.suiviProblematique) }}
-        {{ form_row(form.problematique) }}
-        {# Ajoutez tous les champs que vous souhaitez afficher ici, en excluant le bouton de soumission #}
-
-        {# Fin du formulaire (ne pas inclure le bouton de soumission ici) #}
-        {{ form_end(form) }}
+        {{ form_widget(form.problematique) }}
+    </div>
+    <div class="mb-2">
+        {{ form_widget(form.suiviProblematique) }}
+    </div>
 </div>
+
 {% endblock %}

@@ -51,7 +51,7 @@ class UserPasswordType extends AbstractType
             'label_attr' => [
                 'class' => 'form-label mt-2'
             ],
-            /* 'constraints' => [
+            'constraints' => [
                 new Assert\Regex([
                     'pattern' => '/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*\W).{12,}$/',
                     'message' => 'Le mot de passe doit contenir au moins 12 caractères, une majuscule, une minuscule, un chiffre et un caractère spécial'
@@ -59,7 +59,7 @@ class UserPasswordType extends AbstractType
                 new Assert\NotBlank([
                     'message' => 'Le mot de passe est obligatoire'
                 ])
-            ] */
+            ]
         ])
         ->add('submit', SubmitType::class, [
             'label' => 'Changer mot de passe',

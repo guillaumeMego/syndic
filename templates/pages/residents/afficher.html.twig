@@ -1,0 +1,251 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Syndic - Résidents{% endblock %}
+{% block stylesheets %}
+{{ parent() }}
+<style>
+    th {
+        white-space: nowrap;
+        font-weight: 300 !important;
+    }
+
+    td {
+        vertical-align: middle;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        font-weight: 300 !important;
+    }
+
+    .pagination .page-item .page-link {
+        color: #000;
+        background-color: #fff;
+    }
+
+    .pagination .page-item.active .page-link {
+        color: #fff;
+        background-color: #000;
+    }
+
+    .sortable a {
+        color: #000 !important;
+        font-weight: 300 !important;
+        text-decoration: none !important;
+    }
+
+    .sortable {
+        font-weight: 300 !important;
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="mx-5">
+    <h1 class="display-4 text-secondary mt-3">Résidents</h1>
+    <hr>
+    {% if is_granted('ROLE_CONSEIL') %}
+    <a href="{{ path('app_registration') }}" class="btn btn-primary btn mb-3">Ajouter un résident</a>
+    {% endif %}
+
+    <div class="d-flex justify-content-between align-items-center">
+        <h2 class="display-6">Liste des résidents :</h2>
+        {{ form_start(form) }}
+        <div class="row">
+            <div class="col-8">
+                {{ form_row(form.q) }}
+            </div>
+            <div class="col-1 ps-0">
+                <input type="submit" class="btn btn-primary" value="Rechercher">
+            </div>
+        </div>
+        {{ form_end(form) }}
+    </div>
+    {% for message in app.flashes('success') %}
+    <div class="alert alert-success" role="alert">
+        {{ message }}
+    </div>
+    {% endfor %}
+    {% for message in app.flashes('danger') %}
+    <div class="alert alert-danger" role="alert">
+        {{ message }}
+    </div>
+    {% endfor %}
+    <div class="p-3 shadow-lg border rounded bg-white mb-3">
+        <div class="table-responsive">
+            <table class="table table-hover" id="enAttente">
+                <thead>
+                    <tr class="leader">
+                        <th scope="col" class="sortable">Photo</th>
+                        {% set direction = app.request.get('direction') %}
+                        {% set sort = app.request.get('sort') %}
+                        <th scope="col" class="sortable">
+                            {% if direction == 'asc' and sort == 'u.nom' %}
+                            {{ knp_pagination_sortable(users, 'Nom', 'u.nom', {}, {'direction': 'desc'}) | raw
+                            }}
+                            {% else %}
+                            {{ knp_pagination_sortable(users, 'Nom', 'u.nom', {}, {'direction': 'asc'}) | raw
+                            }}
+                            {% endif %}
+                        </th>
+                        <th scope="col" class="sortable">
+                            {% if direction == 'asc' and sort == 'u.prenom' %}
+                            {{ knp_pagination_sortable(users, 'Prénom', 'u.prenom', {}, {'direction': 'desc'}) | raw
+                            }}
+                            {% else %}
+                            {{ knp_pagination_sortable(users, 'Prénom', 'u.prenom', {}, {'direction': 'asc'}) | raw
+                            }}
+                            {% endif %}
+                        </th>
+                        <th scope="col" class="sortable">
+                            {% if direction == 'asc' and sort == 'u.email' %}
+                            {{ knp_pagination_sortable(users, 'Email', 'u.email', {}, {'direction': 'desc'}) | raw
+                            }}
+                            {% else %}
+                            {{ knp_pagination_sortable(users, 'Email', 'u.email', {}, {'direction': 'asc'}) | raw
+                            }}
+                            {% endif %}
+                        </th>
+
+                        <th scope="col" class="sortable">
+                            {% if direction == 'asc' and sort == 'u.roles' %}
+                            {{ knp_pagination_sortable(users, 'Locataire/Proprietaire', 'u.roles', {}, {'direction':
+                            'desc'}) |
+                            raw
+                            }}
+                            {% else %}
+                            {{ knp_pagination_sortable(users, 'Locataire/Proprietaire', 'u.roles', {}, {'direction':
+                            'asc'})
+                            |
+                            raw
+                            }}
+                            {% endif %}
+                        </th>
+
+                        <th scope="col" class="sortable">
+                            {% if direction == 'asc' and sort == 'u.roles' %}
+                            {{ knp_pagination_sortable(users, 'Membres du conseil', 'u.roles', {}, {'direction':
+                            'desc'}) |
+                            raw
+                            }}
+                            {% else %}
+                            {{ knp_pagination_sortable(users, 'Membres du conseil', 'u.roles', {}, {'direction': 'asc'})
+                            |
+                            raw
+                            }}
+                            {% endif %}
+                        </th>
+                        <th scope="col" class="sortable">
+                            {% if direction == 'asc' and sort == 'u.date_ajout' %}
+                            {{ knp_pagination_sortable(users, "Date d'ajout", 'u.date_ajout', {}, {'direction': 'desc'})
+                            |
+                            raw
+                            }}
+                            {% else %}
+                            {{ knp_pagination_sortable(users, "Date d'ajout", 'u.date_ajout', {}, {'direction': 'asc'})
+                            |
+                            raw }}
+                            {% endif %}
+                        </th>
+                        {% if is_granted('ROLE_CONSEIL') %}
+                        <th scope="col" class="sortable">Voir</th>
+                        <th scope="col" class="sortable">Editer</th>
+                        <th scope="col" class="sortable">Supprimer</th>
+                        {% endif %}
+
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in users %}
+                    <tr>
+                        <td><img src="{{asset('images/profil/' ~ user.imageName)}}" alt="photo" width="50px"
+                                height="50px" class="rounded-circle"></td>
+                        <td>{{user.nom}}</td>
+                        <td>{{user.prenom}}</td>
+                        <td>{{user.email}}</td>
+
+                        {# Afficher juste locataire ou proprietaire selon le role #}
+                        {% if user.roles[0] == "ROLE_LOCATAIRE" %}
+                        <td>Locataire</td>
+                        {% else %}
+                        <td>Proprietaire</td>
+                        {% endif %}
+                        {% set hasConseilRole = false %}
+                        {% for role in user.roles %}
+                        {% if role == 'ROLE_CONSEIL' %}
+                        {% set hasConseilRole = true %}
+                        {% endif %}
+                        {% endfor %}
+
+                        {% if hasConseilRole %}
+                        <td>Oui</td>
+                        {% else %}
+                        <td>Non</td>
+                        {% endif %}
+                        <td>{{user.dateAjout|date('d/m/Y')}}</td>
+                        {% if is_granted('ROLE_CONSEIL') %}
+                        <td>
+                            <a href="{{path('voir_resident', {'id': user.id})}}"
+                                class="d-flex justify-content-center text-primary"><svg
+                                    xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                    class="bi bi-eye" viewBox="0 0 16 16">
+                                    <path
+                                        d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8zM1.173 8a13.133 13.133 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5c2.12 0 3.879 1.168 5.168 2.457A13.133 13.133 0 0 1 14.828 8c-.058.087-.122.183-.195.288-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5c-2.12 0-3.879-1.168-5.168-2.457A13.134 13.134 0 0 1 1.172 8z" />
+                                    <path
+                                        d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zM4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0z" />
+                                </svg></a>
+                        </td>
+                        <td>
+                            <a href="{{path('app_edit', {'id': user.id})}}"
+                                class="d-flex justify-content-center text-success"><svg
+                                    xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
+                                    class="bi bi-pencil" viewBox="0 0 16 16">
+                                    <path
+                                        d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z" />
+                                </svg></a>
+                        </td>
+                        <td>
+                            <div class="d-flex justify-content-center text-danger" data-bs-toggle="modal"
+                                data-bs-target="#exampleModal">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
+                                    class="bi bi-trash3" viewBox="0 0 16 16">
+                                    <path
+                                        d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z" />
+                                </svg>
+                            </div>
+
+                            <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+                                aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="exampleModalLabel">Suppression d'une
+                                                problématique
+                                            </h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                aria-label="Fermer"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <p>Êtes vous sur de vouloir supprimer cette problématique ?</p>
+                                            <p>Cette action est irréversible.</p>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary"
+                                                data-bs-dismiss="modal">Fermer</button>
+                                            <a href="{{path('supprimer_resident', {'id': user.id})}}" type="button"
+                                                class="btn btn-danger">Supprimer</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                        {% endif %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="pagination pagination-sm mb-2">
+            {{ knp_pagination_render(users) }}
+        </div>
+    </div>
+</div>
+{% endblock %}

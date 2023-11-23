@@ -5,12 +5,12 @@ namespace App\Form;
 use App\Entity\User;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Vich\UploaderBundle\Form\Type\VichImageType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
-use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 
 class UserType extends AbstractType
 {
@@ -28,15 +28,6 @@ class UserType extends AbstractType
                 'label_attr' => [
                     'class' => 'form-label mt-2'
                 ],
-                'constraints' => [
-                    new Assert\Length([
-                        'min' => 2,
-                        'max' => 100,
-                    ]),
-                    new Assert\NotBlank([
-                        'message' => 'Le prénom est obligatoire'
-                    ])
-                ]
             ])
             ->add('nom', TextType::class, [
                 'attr' => [
@@ -49,35 +40,72 @@ class UserType extends AbstractType
                 'label_attr' => [
                     'class' => 'form-label mt-2'
                 ],
-                'constraints' => [
-                    new Assert\Length([
-                        'min' => 2,
-                        'max' => 100
-                    ]),
-                    new Assert\NotBlank([
-                        'message' => 'Le nom est obligatoire'
-                    ])
-                ]
             ])
-            ->add(
-                'adresse',
-                TextareaType::class,
-                [
-                    'attr' => [
-                        'placeholder' => 'Entrez une adresse',
-                        'class' => 'form-control',
-                    ],
-                    'label' => 'Adresse',
-                    'label_attr' => [
-                        'class' => 'form-label mt-2'
-                    ],
-                    'constraints' => [
-                        new Assert\NotBlank([
-                            'message' => 'L\'adresse est obligatoire'
-                        ])
-                    ]
-                ]
-            )
+            ->add('email', TextType::class, [
+                'attr' => [
+                    'placeholder' => 'Entrez un email',
+                    'class' => 'form-control',
+                    'minlength' => '2',
+                    'maxlength' => '100'
+                ],
+                'label' => 'Email',
+                'label_attr' => [
+                    'class' => 'form-label mt-2'
+                ],
+            ])
+            ->add('telephone', TextType::class, [
+                'attr' => [
+                    'placeholder' => 'Entrez un numéro de téléphone',
+                    'class' => 'form-control',
+                    'minlength' => '2',
+                    'maxlength' => '100'
+                ],
+                'label' => 'Téléphone',
+                'label_attr' => [
+                    'class' => 'form-label mt-2'
+                ],
+            ])
+            ->add('batiment', ChoiceType::class, [
+                'choices'  => [
+                    'A' => 'A',
+                    'B' => 'B',
+                    'C' => 'C',
+                ],
+                'attr' => [
+                    'placeholder' => 'Entrez un numéro de batiment',
+                    'class' => 'form-select',
+                    'minlength' => '2',
+                    'maxlength' => '100'
+                ],
+                'label' => 'Batiment',
+                'label_attr' => [
+                    'class' => 'form-label mt-2'
+                ],
+            ])
+            ->add('etage', IntegerType::class, [
+                'attr' => [
+                    'placeholder' => 'Entrez un numéro d\'étage',
+                    'class' => 'form-control',
+                    'min' => 0,
+                    'max' => 99
+                ],
+                'label' => 'Etage',
+                'label_attr' => [
+                    'class' => 'form-label mt-2'
+                ],
+            ])
+            ->add('numero_appartement', IntegerType::class, [
+                'attr' => [
+                    'placeholder' => 'Entrez un numéro d\'appartement',
+                    'class' => 'form-control',
+                    'min' => 0,
+                    'max' => 999,
+                ],
+                'label' => 'Appartement',
+                'label_attr' => [
+                    'class' => 'form-label mt-2',
+                ],
+            ])
             ->add('roles', ChoiceType::class, [
                 'choices' => [
                     'oui' => 'ROLE_CONSEIL',
@@ -90,17 +118,34 @@ class UserType extends AbstractType
                 ],
             ])
             ->add('submit', SubmitType::class, [
-                'label' => 'Modifier',
+                'label' => 'Modifier le profil',
                 'attr' => [
-                    'class' => 'btn btn-primary btn-block mt-4'
+                    'class' => 'btn btn-outline-primary btn-sm btn-block mt-4'
                 ]
             ]);
+
+        if (!in_array('imageFile', $options['exclude_fields'])) {
+            $builder->add('imageFile', VichImageType::class, [
+                'required' => false,
+                'label' => 'Photo de profil',
+                'label_attr' => [
+                    'class' => 'form-label mt-2'
+                ],
+                'download_uri' => false,
+                'attr' => [
+                    'class' => 'form-control'
+                ],
+                'allow_delete' => false,
+                'image_uri' => false,
+            ]);
+        }
     }
 
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
             'data_class' => User::class,
+            'exclude_fields' => [],
         ]);
     }
 }

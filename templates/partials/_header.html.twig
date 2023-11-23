@@ -1,30 +1,57 @@
-<nav class="navbar navbar-expand-lg bg-primary" data-bs-theme="dark">
-    <div class="container-fluid">
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarColor01"
-            aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarColor01">
-            <ul class="navbar-nav me-auto">
-                <li class="nav-item d-flex">
-                    <a class="nav-link active" href="{{ path('home.index') }}">Home
-                        <span class="visually-hidden">(current)</span>
-                    </a>
-                    <ul class="navbar-nav ms-auto">
-                        {% if is_granted('IS_AUTHENTICATED_FULLY') %}
-                        <li class="nav-item">
-                            <a class="nav-link text-white" href="{{ path('app_logout') }}">Déconnexion
-                            </a>
-                        </li>
-                        {% else %}
-                        <li class="nav-item">
-                            <a class="nav-link text-white" href="{{ path('app_login') }}">Connexion
-                            </a>
-                        </li>
-                        {% endif %}
-                    </ul>
-                </li>
-            </ul>
-        </div>
+<div class="d-flex flex-column p-2 text-white bg-dark h-100" style="width: 250px; min-height:100vh">
+    <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
+        <svg class="bi me-2" width="40" height="32">
+            <use xlink:href="#bootstrap" />
+        </svg>
+        <span class="fs-4">Syndic</span>
+    </a>
+    <hr>
+    <ul class="nav nav-pills flex-column mb-auto">
+        <li>
+            <a href="{{ path('dashboard') }}" class="nav-link {{ app.request.attributes.get('_route') == 'dashboard' ? 'active' : '' }}">
+                <svg class="bi me-2" width="16" height="16">
+                    <use xlink:href="#speedometer2" />
+                </svg>
+                Dashboard
+            </a>
+        </li>
+        <li>
+            <a href="{{path('afficher_residents')}}" class="nav-link {{ app.request.attributes.get('_route') == 'afficher_residents' ? 'active' : '' }}">
+                <svg class="bi me-2" width="16" height="16">
+                    <use xlink:href="#table" />
+                </svg>
+                Résidents
+            </a>
+        </li>
+        <li>
+            <a href="{{path('afficher_problematiques')}}" class="nav-link {{ app.request.attributes.get('_route') == 'afficher_problematiques' ? 'active' : '' }}">
+                <svg class="bi me-2" width="16" height="16">
+                    <use xlink:href="#grid" />
+                </svg>
+                Problématiques
+            </a>
+        </li>
+        
+    </ul>
+    <hr>
+    <div class="dropdown">
+        <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" id="dropdownUser1"
+            data-bs-toggle="dropdown" aria-expanded="false">
+            <img src="{{ asset('images/profil/' ~ app.user.imageName) }}" alt="" width="32" height="32" class="rounded-circle me-2">
+            <strong>{{ app.user.prenom }} {{ app.user.nom }}</strong>
+
+        </a>
+        <ul class="dropdown-menu dropdown-menu-dark text-small shadow" aria-labelledby="dropdownUser1">
+            <li><a class="dropdown-item" href="{{ path('edit_my_profil', {'id': app.user.id}) }}">Mon profil</a></li>
+            <li>
+                <hr class="dropdown-divider">
+            </li>
+            {# verifi si l'resident est connecté avec twig #}
+            {% if app.user %}
+            <li><a class="dropdown-item" href="{{ path('app_logout') }}">Déconnexion</a></li>
+            {% else %}
+            <li><a class="dropdown-item" href="{{ path('app_login') }}">Connexion</a></li>
+            {% endif %}
+        </ul>
     </div>
-</nav>
+</div>

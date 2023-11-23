@@ -23,6 +23,7 @@ class SuiviProblematique
     private ?\DateTimeImmutable $date_modif = null;
 
     #[ORM\ManyToOne(targetEntity: User::class)]
+    #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
     private $membreValidateur;
 
     #[ORM\OneToOne(targetEntity: Problematiques::class, inversedBy: 'suiviProblematique', cascade: ['persist', 'remove'])]

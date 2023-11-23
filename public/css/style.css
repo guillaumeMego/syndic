@@ -1,0 +1,32 @@
+
+i{
+    position: relative;
+    width: 0;
+    font-size: 20px;
+    right: 30px;
+    margin-top: 2px;
+}
+
+
+.facade{
+    background: url('../images/fonds/fond.jpg') center;
+    background-size: cover;
+    height: 70px;
+}
+.reste{
+    height: calc(100vh - 70px);
+}
+
+.active{
+    color: #fff !important;
+    background: none !important;
+}
+.nav-link{
+    color: grey;
+}
+td{
+    vertical-align: middle;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+

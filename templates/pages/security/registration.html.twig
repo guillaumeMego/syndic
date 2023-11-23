@@ -1,10 +1,51 @@
 {% extends "base.html.twig" %}
 {% block title %}
-    Syndic - Inscription
+Syndic - Inscription
 {% endblock %}
 {% block body %}
-    <div class="container">
-        <h1 class="mt-4">Formulaire d'inscription</h1>
-        {{form(form)}}
+<div class="container">
+    <h1 class="display-4 text-secondary mt-3">Formulaire d'inscription</h1>
+    <hr>
+    {% for message in app.flashes('danger') %}
+    <div class="alert alert-danger mt-2">
+        {{ message }}
     </div>
+    {% endfor %}
+    {% for message in app.flashes('success') %}
+    <div class="alert alert-success mt-2">
+        {{ message }}
+    </div>
+    {% endfor %}
+    {{ form_start(form) }}
+    <div class="row col-12">
+        <div class="col-6">
+            {{ form_row(form.nom) }}
+        </div>
+        <div class="col-6">
+            {{ form_row(form.prenom) }}
+        </div>
+        {{ form_row(form.email) }}
+        {{ form_row(form.telephone) }}
+        <div class="col-4">
+        {{ form_row(form.batiment) }}
+        </div>
+        <div class="col-4">
+        
+        {{ form_row(form.etage) }}
+        </div>
+        <div class="col-4">
+        {{ form_row(form.numero_appartement) }}
+        </div>
+        <div class="col-4">
+        {{ form_row(form.roleChoice) }}
+    </div>
+    <div class="col-4">
+        {{ form_row(form.roles) }}
+    </div>
+        {{ form_row(form.submit, {'attr': {'class': 'btn btn-primary btn my-3 mb-5'}}) }}
+    </div>
+    {{ form_end(form) }}
+
+</div>
+<script src="{{ asset('js/script.js')}}"></script>
 {% endblock %}

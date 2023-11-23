@@ -3,15 +3,16 @@
 namespace App\Repository;
 
 use App\Entity\User;
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use App\Entity\Recherche;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Component\Security\Core\User\PasswordUpgraderInterface;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
-use Symfony\Component\Security\Core\User\PasswordUpgraderInterface;
 
 /**
  * @extends ServiceEntityRepository<User>
-* @implements PasswordUpgraderInterface<User>
+ * @implements PasswordUpgraderInterface<User>
  *
  * @method User|null find($id, $lockMode = null, $lockVersion = null)
  * @method User|null findOneBy(array $criteria, array $orderBy = null)
@@ -23,6 +24,22 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, User::class);
+    }
+
+    public function findAllWithSearch(Recherche $search)
+    {
+        $queryBuilder = $this->createQueryBuilder('u');
+
+        if ($search->getQ()) {
+            $queryBuilder->where('u.nom LIKE :term')
+                ->orWhere('u.prenom LIKE :term')
+                ->orWhere('u.email LIKE :term')
+                ->orWhere('u.roles LIKE :role')
+                ->setParameter('term', '%' . $search->getQ() . '%')
+                ->setParameter('role', '%"ROLE_' . strtoupper($search->getQ()) . '"%');
+        }
+
+        return $queryBuilder->getQuery()->getResult();
     }
 
     /**
@@ -39,28 +56,86 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         $this->getEntityManager()->flush();
     }
 
-//    /**
-//     * @return User[] Returns an array of User objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('u')
-//            ->andWhere('u.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('u.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
+    /**
+     * Retourne le nombre de locataire
+     *
+     * @return integer
+     */
+    public function countLocataire(): int
+    {
+        return $this->createQueryBuilder('u')
+            ->select('count(u.id)')
+            ->where('u.roles LIKE :role')
+            ->setParameter('role', '%"' . 'ROLE_LOCATAIRE' . '"%')
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
 
-//    public function findOneBySomeField($value): ?User
-//    {
-//        return $this->createQueryBuilder('u')
-//            ->andWhere('u.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
+    /**
+     * Retourne le nombre de Proprietaire
+     *
+     * @return integer
+     */
+    public function countProprietaire(): int
+    {
+        return $this->createQueryBuilder('u')
+            ->select('count(u.id)')
+            ->where('u.roles LIKE :role')
+            ->setParameter('role', '%"' . 'ROLE_PROPRIETAIRE' . '"%')
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
+    /**
+     * Retourne le nombre de membre du conseil
+     *
+     * @return integer
+     */
+    public function countMembreConseil(): int
+    {
+        return $this->createQueryBuilder('u')
+            ->select('count(u.id)')
+            ->where('u.roles LIKE :role')
+            ->setParameter('role', '%"' . 'ROLE_CONSEIL' . '"%')
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
+    /**
+     * Retourne le role d'un utilisateur
+     */
+    public function getRole($id)
+    {
+        return $this->createQueryBuilder('u')
+            ->select('u.roles')
+            ->where('u.id = :id')
+            ->setParameter('id', $id)
+            ->getQuery()
+            ->getResult();
+    }
+
+    //    /**
+    //     * @return User[] Returns an array of User objects
+    //     */
+    //    public function findByExampleField($value): array
+    //    {
+    //        return $this->createQueryBuilder('u')
+    //            ->andWhere('u.exampleField = :val')
+    //            ->setParameter('val', $value)
+    //            ->orderBy('u.id', 'ASC')
+    //            ->setMaxResults(10)
+    //            ->getQuery()
+    //            ->getResult()
+    //        ;
+    //    }
+
+    //    public function findOneBySomeField($value): ?User
+    //    {
+    //        return $this->createQueryBuilder('u')
+    //            ->andWhere('u.exampleField = :val')
+    //            ->setParameter('val', $value)
+    //            ->getQuery()
+    //            ->getOneOrNullResult()
+    //        ;
+    //    }
 }

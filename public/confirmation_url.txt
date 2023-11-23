@@ -1,0 +1,1 @@
+http://127.0.0.1:8000/verify/email?expires=1700493111&signature=Fnem7FG58S5RCDUbgtW86uOLyNIpUM7cyCNYb2kwbFg%3D&token=yo5Vv7PQnCFMf6AiLg9gyKRRT5K%2FBwCAZlKySidw8MA%3D

@@ -1,31 +1,103 @@
-{% extends 'base.html.twig' %}
-
-{% block title %}Syndic - Connexion{% endblock %}
+{% extends "baseConnect.html.twig" %}
+{% block title %}Syndic Résidents - Connexion{% endblock %}
 
 {% block body %}
-<div class="container">
-    <h1 class="mt-4">Formulaire de connexion</h1>
-    {% for message in app.flashes('success') %}
-        <div class="alert alert-success" role="alert">
-            {{ message }}
-        </div>
-    {% endfor %}
+<div>
+    <h1 class="display-3 text-center mb-5">Syndic Résidents</h1>
     {% if error %}
-        <div class="alert alert-danger" role="alert">
-            {{ error.messageKey|trans(error.messageData, 'security') }}
-        </div>
+    <div class="alert alert-danger mx-auto mb-0 col-md-8 col-xl-4 col-sm-10 col-xs-8" role="alert">
+        {% if error is not iterable %}
+        {{ error }}
+        {% else %}
+        {{ error.messageKey|trans(error.messageData, 'security') }}
+        {% endif %}
+    </div>
     {% endif %}
-    <form action="{{path('app_login')}}" method="post">
-        <div class="form-group">
-            <label for="username" class="form-label mt-4">Adresse email</label>
-            <input type="email" class="form-control" id="username" name="_username" placeholder="exemple@mail.com" value="{{ last_Username }}">
-            <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
-          </div>
-          <div class="form-group">
-            <label for="password" class="form-label mt-4">Mot de passe</label>
-            <input type="password" class="form-control" id="password" placeholder="************" name="_password" autocomplete="off">
-          </div>
-          <button class="btn btn-primary mt-4" type="submit">Se connecter</button>
-    </form>
+    {% for message in app.flashes('success') %}
+    <div class="alert alert-success" role="alert">
+        {{ message }}
+    </div>
+    {% endfor %}
+    <div class="formulaire d-flex justify-content-center vw-100">
+        <form action="{{path('app_login')}}" method="post"
+            class="shadow p-5 bg-dark text-white rounded col-md-8 col-xl-4 col-sm-10 col-xs-8" data-bs-theme="dark"
+            id="login-form">
+            <h2 class="display-6 text-center mb-5">Formulaire de connexion</h1>
+                <div class="form-group">
+                    <label for="username" class="form-label mt-4">Adresse mail</label>
+                    <input type="email" class="form-control" id="username" name="_username"
+                        placeholder="exemple@mail.com" value="{{ last_Username }}">
+                    <div class="invalid-feedback" style="display: none;" id="username-error">Veuillez entrer un email
+                    </div>
+                    <div class="invalid-feedback" style="display: none;" id="mail-error">Veuillez entrer un email valide
+                    </div>
+                </div>
+                <div class="form-group" id="show_hide_password">
+                    <label for="password" class="form-label mt-4">Mot de passe</label>
+                    <div class="pssw d-flex">
+                        <input type="password" class="form-control" id="password" placeholder="************"
+                            name="_password" autocomplete="off">
+                        <i class="bi bi-eye" aria-hidden="true"></i>
+                    </div>
+                </div>
+                <button class="btn btn-light mt-4" type="submit">Se connecter</button>
+        </form>
+    </div>
 </div>
+<script>
+    let showHidePassword = document.getElementById('show_hide_password');
+    let showHidePasswordInput = showHidePassword.querySelector('input');
+    let showHidePasswordIcon = showHidePassword.querySelector('i');
+
+    showHidePasswordIcon.addEventListener('click', function () {
+        if (showHidePasswordInput.type === 'password') {
+            showHidePasswordInput.type = 'text';
+            showHidePasswordIcon.classList.remove('bi-eye-slash');
+            showHidePasswordIcon.classList.add('bi-eye');
+        } else {
+            showHidePasswordInput.type = 'password';
+            showHidePasswordIcon.classList.remove('bi-eye');
+            showHidePasswordIcon.classList.add('bi-eye-slash');
+        }
+    });
+
+    let username = document.getElementById('username');
+    document.getElementById('login-form').onsubmit = function () {
+
+        let usernameError = document.getElementById('username-error');
+        if (username.value.trim() === '') {
+            username.classList.add('is-invalid');
+            usernameError.style.display = 'block';
+            return false;
+        } else {
+            username.classList.remove('is-invalid');
+            usernameError.style.display = 'none';
+        }
+        return true;
+    };
+    username.addEventListener('keyup', function () {
+        let mailRegex = /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/;
+        let mailError = document.getElementById('mail-error');
+        if (mailRegex.test(this.value)) {
+            this.classList.remove('is-invalid');
+            this.classList.add('is-valid');
+            mailError.style.display = 'none';
+        } else {
+            this.classList.add('is-invalid');
+            this.classList.remove('is-valid');
+            mailError.style.display = 'block';
+        }
+    });
+    // verifier si l'resident sort du champ sans remplir
+    username.addEventListener('blur', function () {
+        let mailError = document.getElementById('mail-error');
+        let usernameError = document.getElementById('username-error');
+        mailError.style.display = 'none';
+        usernameError.style.display = 'none';
+
+    });
+
+
+
+</script>
 {% endblock %}

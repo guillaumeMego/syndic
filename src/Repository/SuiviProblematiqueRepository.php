@@ -2,9 +2,10 @@
 
 namespace App\Repository;
 
+use App\Entity\Recherche;
 use App\Entity\SuiviProblematique;
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 
 /**
  * @extends ServiceEntityRepository<SuiviProblematique>

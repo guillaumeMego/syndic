@@ -1,0 +1,186 @@
+{% extends "base.html.twig" %}
+
+{% block title %}Projet syndic{% endblock %}
+
+{% block body %}
+<div class="mx-5">
+    <h1 class="display-4 text-secondary mt-3">Dashboard</h1>
+    <hr>
+    <div class="infos">
+        <div class="col-12 d-lg-flex flex-lg-nowrap align-items-stretch mb-3">
+            <div class="col-md-12 col-lg-3 me-2 mb-3">
+                <div class="card border-light shadow h-50 mb-3">
+                    <div class="card-body d-flex flex-column justify-content-evenly">
+                        <div class="d-flex justify-content-between">
+                            <h4 class="card-title lead display-6">Résidents</h4>
+                            <i class="bi bi-person text-success" style="font-size: 30px;"></i>
+                        </div>
+                        <h6 class="card-subtitle text-muted">Nombre de résidents :</h6>
+                        <a href="{{ path('afficher_residents') }}" class="text-success display-6"
+                            style="text-decoration:none">{{ count
+                            }}</a>
+                    </div>
+                </div>
+                <div class="card border-light shadow h-50">
+                    <div class="card-body d-flex flex-column justify-content-evenly">
+                        <div class="d-flex justify-content-between">
+                            <h4 class="card-title lead display-6">Résidents</h4>
+                            <i class="bi bi-person text-success" style="font-size: 30px;"></i>
+                        </div>
+                        <div class="info d-flex justify-content-between align-items-center">
+                            <h6 class="text-muted mb-0">Nombre de Propriétaires</h6>
+                            <a href="{{ path('afficher_residents') }}" class="card-link text-success lead"
+                                style="text-decoration:none">{{ countProprietaire }}</a>
+                        </div>
+                        <div class="info d-flex justify-content-between align-items-center">
+                            <h6 class="text-muted mb-0">Nombre de Locataires</h6>
+                            <a href="{{ path('afficher_residents') }}" class="card-link text-success lead"
+                                style="text-decoration:none">{{ countLocataire }}</a>
+                        </div>
+                        <div class="info d-flex justify-content-between align-items-center">
+                            <h6 class="text-muted mb-0">Nombre de membre du conseil</h6>
+                            <a href="{{ path('afficher_residents') }}" class="card-link text-success lead"
+                                style="text-decoration:none">{{ countAdmin }}</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12 col-lg-9">
+                <canvas id="myChart" class="card border-light shadow"></canvas>
+            </div>
+        </div>
+        <div class="col-12 d-lg-flex flex-lg-nowrap align-items-stretch mb-3">
+            <div class="col-md-12 col-lg-5 me-2">
+                <div id='calendar' class="card p-3 shadow col-xs-12"></div>
+            </div>
+            <div class="col-md-12 col-lg-7 me-2 mb-3">
+                <div class="card border-light shadow h-50 mb-3">
+                    <div class="card-body d-flex flex-column justify-content-evenly">
+                        <div class="d-flex justify-content-between">
+                            <h4 class="card-title lead display-6">Problématiques</h4>
+                            <i class="bi bi-exclamation-triangle text-danger" style="font-size: 30px;"></i>
+                        </div>
+                        <h6 class="card-subtitle text-muted">Problématiques en attente de validation :</h6>
+                        <a href="{{ path('afficher_problematiques') }}" class="text-success display-6"
+                            style="text-decoration:none">{{ countSuiviEnAttente
+                            }}</a>
+                    </div>
+                </div>
+                <div class="card border-light shadow h-50 mb-3">
+                    <div class="card-body d-flex flex-column justify-content-evenly">
+                        <div class="d-flex justify-content-between">
+                            <h4 class="card-title lead display-6">Problématiques</h4>
+                            <i class="bi bi-exclamation-triangle text-danger" style="font-size: 30px;"></i>
+                        </div>
+                        <h6 class="card-subtitle text-muted">Nombre de problématiques :</h6>
+                        <a href="{{ path('afficher_problematiques') }}" class="text-success display-6"
+                            style="text-decoration:none">{{ countProblematiques
+                            }}</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block javascripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', (event) => {
+        const annee = Object.values(JSON.parse('{{ annee|json_encode|raw }}'));
+        const nbProblematique = Object.values(JSON.parse('{{ nbProblematique|json_encode|raw }}'));
+        const nbProblematiqueResolu = Object.values(JSON.parse('{{ nbProblematiqueResolu|json_encode|raw }}'));
+        const nbProblematiqueNonResolu = Object.values(JSON.parse('{{ nbProblematiqueNonResolu|json_encode|raw }}'));
+
+        const ctx = document.getElementById('myChart').getContext('2d');
+        const myChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: annee,
+                datasets: [{
+                    label: 'Nombre de Problématiques',
+                    data: nbProblematique,
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 1
+                },
+                {
+                    label: 'Nombre de Problématiques Résolu',
+                    data: nbProblematiqueResolu,
+                    backgroundColor: 'rgba(255, 206, 86, 0.2)',
+                    borderColor: 'rgba(255, 206, 86, 1)',
+                    borderWidth: 1
+                },
+                {
+                    label: 'Nombre de Problématiques Non Résolu',
+                    data: nbProblematiqueNonResolu,
+                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    });
+
+</script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.5/index.global.min.js"
+    integrity="sha256-dHUNnePy81fXq4D/wfu7cPsEIP7zl6MvLb84jtZf+UY=" crossorigin="anonymous"></script>
+<script src='fullcalendar/daygrid/main.js'></script>
+<script src='fullcalendar/timegrid/main.js'></script>
+<script src='fullcalendar/interaction/main.js'></script>
+<script src='fullcalendar/dist/index.global.js'></script>
+
+<!-- Inclure le fichier de langue française -->
+<script src='fullcalendar/core/locales/fr.js'></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        var calendarEl = document.getElementById('calendar');
+
+        $.ajax({
+            url: '/calendar-events', // Remplacez ceci par l'URL qui renvoie le JSON
+            method: 'GET',
+            success: function (data) {
+                var calendar = new FullCalendar.Calendar(calendarEl, {
+                    defaultView: 'dayGridMonth',
+                    editable: true,
+                    events: data, // Utilisez les données récupérées pour les événements
+                    headerToolbar: {
+                        start: 'prev,next today',
+                        center: 'title',
+                        end: 'dayGridMonth,timeGridWeek,timeGridDay'
+                    },
+                    timeZone: 'UTC',
+                    eventClick: function (info) {
+                        window.location.href = '/problematiques/' + info.event.id;
+                    },
+                    dateClick: function (info) {
+                        calendar.changeView('timeGridDay', info.dateStr); // Change la vue en 'jour' lorsque vous cliquez sur une date
+                    },
+                    locale: 'fr',
+                    buttonText: {
+                        today: 'aujourd\'hui',
+                        month: 'mois',
+                        week: 'semaine',
+                        day: 'jour',
+                        year: 'année'
+                    },
+                    displayEventTime: false,
+                });
+                calendar.render();
+            }
+        });
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,82 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Syndic - Profil du résident{% endblock %}
+
+{% block body %}
+<div class="container">
+    <h2 class="display-4 text-secondary mt-3">Profil du résident</h2>
+    <hr>
+    {% for message in app.flashes('success') %}
+    <div class="alert alert-success mt-2">
+        {{ message }}
+    </div>
+    {% endfor %}
+    <div class="d-flex justify-content-start align-items-start flex-wrap">
+        <div class="card shadow rounded me-4">
+            <img src="{{ vich_uploader_asset(resident, 'imageFile') }}" alt="Photo de profil" class="img-fluid" style="max-height: 500px;">
+        </div>
+        <div class="col-6">
+            <h3 class="display-6">{{ resident.nom }} {{ resident.prenom }}</h3>
+            <div class="mail">
+                <p><span class="fw-bold">Mail : </span><a href="mailto:{{ resident.email }}">{{ resident.email }}</a></p>
+            </div>
+
+            <div class="telephone">
+                <p><span class="fw-bold">Telephone : </span><a href="tel:{{ resident.telephone }}">{{ resident.telephone }}</a></p>
+            </div>
+            <div class="adresse">
+                <p><span class="fw-bold">Batiment :</span> {{ resident.batiment }}</p>
+                <p><span class="fw-bold">Etage : </span>{{ resident.etage }}</p>
+                <p><span class="fw-bold">Appartement : </span>{{ resident.numeroAppartement }}</p>
+            </div>
+            {% if resident.roles[0] == "ROLE_LOCATAIRE" %}
+            <p><span class="fw-bold">Rôle : </span>Locataire</p>
+            {% else %}
+            <p><span class="fw-bold">Rôle : </span>Proprietaire</p>
+            {% endif %}
+            {% set hasConseilRole = false %}
+            {% for role in resident.roles %}
+            {% if role == 'ROLE_CONSEIL' %}
+            {% set hasConseilRole = true %}
+            {% endif %}
+            {% endfor %}
+            {% if hasConseilRole %}
+            <p>Membre du conseil syndical</p>
+            {% endif %}
+            <p><span class="fw-bold">Date d'inscription : </span>{{ resident.dateAjout|date('d/m/Y') }}</p>
+            <div class="d-flex">
+                <p>
+                    <a href="{{path('app_edit', {'id': resident.id})}}"
+                        class="btn btn-primary me-2">Modifier</a>
+                </p>
+                <p><button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                        Supprimer
+                    </button>
+                </p>
+
+                <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+                    aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalLabel">Suppression d'un résident</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Fermer"></button>
+                            </div>
+                            <div class="modal-body">
+                                <p>Êtes vous sur de vouloir supprimer ce résident ?</p>
+                                <p>Cette action est irréversible.</p>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+                                <a href="{{path('supprimer_resident', {'id': resident.id})}}" type="button"
+                                    class="btn btn-danger">Supprimer</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

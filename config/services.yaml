@@ -23,6 +23,21 @@ services:
     App\EntityListener\:
         resource: '../src/EntityListener'
         tags: ['doctrine.orm.entity_listener']
+    
+    App\EntityListener\UserVariableSubscriber:
+        arguments:
+            $tokenStorage: '@security.token_storage'
+
+    login_attempt_limiter:
+        class: Symfony\Component\RateLimiter\RateLimiterFactory
+        arguments:
+            $config: 
+                login_attempt:
+                    policy: 'fixed_window'
+                    limit: 10
+                    interval: '1 minute'
+
+    App\EventSubscriber\CalendarSubscriber:
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones

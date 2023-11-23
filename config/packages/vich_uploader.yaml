@@ -1,0 +1,19 @@
+vich_uploader:
+    db_driver: orm
+    metadata:
+        type: attribute
+
+    mappings:
+        syndic_images:
+            uri_prefix: /images/profil
+            upload_destination: '%kernel.project_dir%/public/images/profil'
+            namer: Vich\UploaderBundle\Naming\SmartUniqueNamer
+
+            # ne pas supprimer la première image
+            delete_on_remove: false
+        
+        problematiques_images:
+            uri_prefix: /images/problematiques
+            upload_destination: '%kernel.project_dir%/public/images/problematiques'
+            namer: vich_uploader.namer_origname
+

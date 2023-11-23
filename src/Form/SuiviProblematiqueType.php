@@ -9,15 +9,12 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\EnumType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 
 class SuiviProblematiqueType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        /* self::EN_ATTENTE,
-            self::EN_COURS,
-            self::RESOLU,
-            self::NON_RESOLU, */
             $builder->add('etat', ChoiceType::class, [
                 'choices' => [
                     'En attente de validation' => 'En attente de validation',
@@ -33,7 +30,14 @@ class SuiviProblematiqueType extends AbstractType
                 'attr' => [
                     'class' => 'form-control'
                 ],
-            ]);
+            ])
+            ->add('submit', SubmitType::class, [
+                    'attr' => [
+                        'class' => 'btn btn-primary mt-3'
+                    ],
+                    'label' => 'Modifier',
+                ]);
+            
             
     }
 

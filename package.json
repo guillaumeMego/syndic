@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "@fullcalendar/core": "^6.1.9",
+    "@fullcalendar/multimonth": "^6.1.9"
+  }
+}
