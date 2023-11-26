@@ -76,9 +76,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Assert\NotNull]
     private array $roles = [];
 
-    #[ORM\Column(type: "string", nullable: true)]
-    private ?string $token = null;
-
     private ?string $plainPassword = null;
 
     #[ORM\Column(type: "string")]
@@ -107,7 +104,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->date_ajout = new \DateTimeImmutable();
         $this->date_modif = new \DateTimeImmutable();
         $this->imageName = 'defaut.jpg';
-        $this->token = rtrim(strtr(base64_encode(random_bytes(32)), '+/', '-_'), '=');
     }
 
     public function getId(): ?int
@@ -278,11 +274,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->roles = $roles;
 
         return $this;
-    }
-
-    public function getToken(): ?string
-    {
-        return $this->token;
     }
 
     public function eraseCredentials(): void
