@@ -21,14 +21,17 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class GroupePageController extends AbstractController
 {
-
+    /**
+     * Renvoie les données pour le calendrier des problématiques
+     *
+     * @param EntityManagerInterface $manager
+     * @return Response
+     */
     #[Route('/calendar-events', name: 'calendar_events', methods: ['GET'])]
     public function calendarEvents(EntityManagerInterface $manager): Response
     {
-        // Créez une nouvelle instance de CalendarEvent
         $calendar = new CalendarEvent(new \DateTime(), new \DateTime('+1 month'), []);
 
-        // calendar 
         $problematiques = $manager->getRepository(\App\Entity\SuiviProblematique::class)
             ->createQueryBuilder('s')
             ->leftJoin('s.problematique', 'p')
@@ -41,7 +44,6 @@ class GroupePageController extends AbstractController
 
         $calendarEvents = [];
         foreach ($problematiques as $problematique) {
-            // Créez un nouvel événement CalendarBundle\Entity\Event et ajoutez-le au calendrier
             $calendarEvent = new Event(
                 $problematique['problematique'],
                 $problematique['date_ajout']
@@ -49,12 +51,10 @@ class GroupePageController extends AbstractController
 
             $calendar->addEvent($calendarEvent);
 
-            // Convertissez l'objet Event en un tableau
             $calendarEventArray = [
                 'id' => $problematique['id'],
                 'title' => $calendarEvent->getTitle(),
                 'start' => $calendarEvent->getStart()->format('Y-m-d H:i:s'),
-                // Ajoutez tous les autres champs que vous voulez inclure dans le JSON
             ];
 
             $calendarEvents[] = $calendarEventArray;
@@ -63,7 +63,15 @@ class GroupePageController extends AbstractController
         return new JsonResponse($calendarEvents);
     }
 
-
+    /**
+     * Controller de la page dashboard
+     *
+     * @param ProblematiquesRepository $problematiqueRepository
+     * @param UserRepository $repository
+     * @param SuiviProblematiqueRepository $suiviProblematiqueRepository
+     * @param GraphiqueController $graphiqueController
+     * @return Response
+     */
     #[Route('/dashboard', name: 'dashboard', methods: ['GET'])]
     #[IsGranted('ROLE_LOCATAIRE')]
     public function index(

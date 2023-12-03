@@ -26,9 +26,13 @@ class SuiviProblematique
     #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
     private $membreValidateur;
 
-    #[ORM\OneToOne(targetEntity: Problematiques::class, inversedBy: 'suiviProblematique', cascade: ['persist', 'remove'])]
+    #[ORM\OneToOne(targetEntity: Problematiques::class, inversedBy: 'suiviProblematique')]
     #[ORM\JoinColumn(nullable: false)]
     private $problematique;
+
+/*     #[ORM\OneToOne(targetEntity: Problematiques::class, inversedBy: 'suiviProblematique', cascade: ['persist', 'remove'])]
+    #[ORM\JoinColumn(nullable: false)]
+    private $problematique; */
 
 
     public function __construct()

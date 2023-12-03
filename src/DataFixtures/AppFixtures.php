@@ -2,7 +2,6 @@
 
 namespace App\DataFixtures;
 
-use DateTime;
 use Faker\Factory;
 use App\Entity\user;
 use Faker\Generator;

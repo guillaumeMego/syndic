@@ -10,7 +10,10 @@ use App\Repository\ProblematiquesRepository;
 class GraphiqueController extends AbstractController
 {
     /**
-     * @Route("/graphique", name="graphique")
+     * Renvoie les données pour le graphique des problématiques par année
+     *
+     * @param ProblematiquesRepository $problematiqueRepository
+     * @return void
      */
     public function problematiqueParAnnee(
         ProblematiquesRepository $problematiqueRepository,

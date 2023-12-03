@@ -17,6 +17,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Repository\SuiviProblematiqueRepository;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class ProblematiquesController extends AbstractController
@@ -32,6 +33,7 @@ class ProblematiquesController extends AbstractController
      * @return Response
      */
     #[Route('/problematiques', name: 'afficher_problematiques', methods: ['GET'])]
+    #[IsGranted('ROLE_LOCATAIRE')]
     public function afficher(
         ProblematiquesRepository $repository,
         SuiviProblematiqueRepository $suiviProblematiqueRepository,
@@ -120,6 +122,7 @@ class ProblematiquesController extends AbstractController
      * @return Response
      */
     #[Route('problematiques/new', name: 'app_problematiques_new', methods: ['GET', 'POST'])]
+    #[IsGranted('ROLE_LOCATAIRE')]
     public function ajoutProlematique(
         Request $request,
         EntityManagerInterface $manager
@@ -164,6 +167,7 @@ class ProblematiquesController extends AbstractController
      * @return Response
      */
     #[Route('problematiques/edit/{id}', name: 'app_problematiques_edit', methods: ['GET', 'POST'])]
+    #[IsGranted('ROLE_CONSEIL')]
     public function editerProblematique(
         Problematiques $problematique,
         Request $request,
@@ -206,6 +210,7 @@ class ProblematiquesController extends AbstractController
      * @return Response
      */
     #[Route('problematiques/delete/{id}', name: 'app_problematiques_delete', methods: ['GET', 'POST'])]
+    #[IsGranted('ROLE_CONSEIL')]
     public function supprimeProblematique(
         Problematiques $problematique,
         EntityManagerInterface $manager
@@ -227,6 +232,7 @@ class ProblematiquesController extends AbstractController
      * @return Response
      */
     #[Route('problematiques/valider/{id}', name: 'app_problematiques_validate', methods: ['GET', 'POST'])]
+    #[IsGranted('ROLE_CONSEIL')]
     public function valider(
         Problematiques $problematique,
         EntityManagerInterface $manager,
@@ -253,6 +259,7 @@ class ProblematiquesController extends AbstractController
      * @return Response
      */
     #[Route('problematiques/{id}', name: 'voir_problematique', methods: ['GET'])]
+    #[IsGranted('ROLE_LOCATAIRE')]
     public function voir(
         Problematiques $problematique,
         SuiviProblematiqueRepository $suiviProblematiqueRepository

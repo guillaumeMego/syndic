@@ -43,18 +43,15 @@ class Problematiques
     #[ORM\Column(type: Types::DATE_IMMUTABLE)]
     private ?\DateTimeImmutable $date_modif = null;
 
-    #[ORM\OneToOne(targetEntity: SuiviProblematique::class, mappedBy: 'problematique', cascade: ['persist', 'remove'])]
+    /* #[ORM\OneToOne(targetEntity: SuiviProblematique::class, mappedBy: 'problematique', cascade: ['persist', 'remove'])]
+    private $suiviProblematiques; */
+
+    #[ORM\OneToOne(targetEntity: SuiviProblematique::class, mappedBy: 'problematique', cascade: ['remove'])]
     private $suiviProblematiques;
 
-    /**
-     * @ORM\ManyToOne(targetEntity=User::class, inversedBy="problematiques")
-     * @ORM\JoinColumn(nullable=false)
-     */
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'problematiques')]
     #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
     private $auteur = null;
-
-    // ...
 
     public function __construct()
     {

@@ -47,7 +47,7 @@ class RechercheType extends AbstractType
     }
 
     /**
-     * Returns the block prefix for the form.
+     * Retourne le préfixe du formulaire.
      *
      * @return string The block prefix.
      */

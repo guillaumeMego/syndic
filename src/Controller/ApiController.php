@@ -5,7 +5,6 @@ namespace App\Controller;
 use App\Repository\UserRepository;
 use App\Repository\ProblematiquesRepository;
 use Symfony\Component\Routing\Annotation\Route;
-use App\Repository\SuiviProblematiqueRepository;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -35,28 +34,34 @@ class ApiController extends AbstractController
                 'image' => $problematique->getImageName(),
                 'commentaire' => $problematique->getCommentaire(),
                 'auteur' => [
-                    'id' => $problematique->getAuteur()->getId(),
-                    'nom' => $problematique->getAuteur()->getNom(),
-                    'prenom' => $problematique->getAuteur()->getPrenom(),
-                    'email' => $problematique->getAuteur()->getEmail(),
-                    'role' => $problematique->getAuteur()->getRoles(),
+                    'id' => $problematique->getAuteur() ? $problematique->getAuteur()->getId() : null,
+                    'nom' => $problematique->getAuteur() ? $problematique->getAuteur()->getNom() : null,
+                    'prenom' => $problematique->getAuteur() ? $problematique->getAuteur()->getPrenom() : null,
+                    'email' => $problematique->getAuteur() ? $problematique->getAuteur()->getEmail() : null,
+                    'role' => $problematique->getAuteur() ? $problematique->getAuteur()->getRoles() : null, 
                     'lien' => [
                         'self' => '/api/residents/' . $problematique->getAuteur()->getId(),
                     ],
                 ],
                 'suivi problematique' => [
-                    'id' => $problematique->getSuiviProblematiques()->getId(),
-                    'etat' => $problematique->getSuiviProblematiques()->getEtat(),
-                    'date modification' => $problematique->getSuiviProblematiques()->getDateModif(),
+                    'id' => $problematique->getSuiviProblematiques() ? $problematique->getSuiviProblematiques()->getId() : null,
+                    'etat' => $problematique->getSuiviProblematiques() ? $problematique->getSuiviProblematiques()->getEtat() : null,
+                    'date modification' => $problematique->getSuiviProblematiques() ? $problematique->getSuiviProblematiques()->getDateModif() : null,
                     'Membre validateur' => [
-                        'id' => $problematique->getSuiviProblematiques()->getMembreValidateur()->getId(),
-                        'nom' => $problematique->getSuiviProblematiques()->getMembreValidateur()->getNom(),
-                        'prenom' => $problematique->getSuiviProblematiques()->getMembreValidateur()->getPrenom(),
-                        'email' => $problematique->getSuiviProblematiques()->getMembreValidateur()->getEmail(),
-                        'role' => $problematique->getSuiviProblematiques()->getMembreValidateur()->getRoles(),
+                        'id' => $problematique->getSuiviProblematiques() && $problematique->getSuiviProblematiques()->getMembreValidateur() 
+                        ? $problematique->getSuiviProblematiques()->getMembreValidateur()->getId() : null,
+                        'nom' => $problematique->getSuiviProblematiques() && $problematique->getSuiviProblematiques()->getMembreValidateur() 
+                        ? $problematique->getSuiviProblematiques()->getMembreValidateur()->getNom() : null,
+                        'prenom' => $problematique->getSuiviProblematiques() && $problematique->getSuiviProblematiques()->getMembreValidateur() 
+                        ? $problematique->getSuiviProblematiques()->getMembreValidateur()->getPrenom() : null,
+                        'email' => $problematique->getSuiviProblematiques() && $problematique->getSuiviProblematiques()->getMembreValidateur() 
+                        ? $problematique->getSuiviProblematiques()->getMembreValidateur()->getEmail() : null,
+                        'role' => $problematique->getSuiviProblematiques() && $problematique->getSuiviProblematiques()->getMembreValidateur() 
+                        ? $problematique->getSuiviProblematiques()->getMembreValidateur()->getRoles() : null,
                     ],
                     'lien' => [
-                        'self' => '/api/suivi_problematiques/' . $problematique->getSuiviProblematiques()->getId(),
+                        'self' => $problematique->getSuiviProblematiques() ? '/api/suivi-problematiques/' 
+                        . $problematique->getSuiviProblematiques()->getId() : null,
                     ],
                 ]
             ];

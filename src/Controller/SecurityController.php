@@ -104,12 +104,10 @@ class SecurityController extends AbstractController
     ): Response {
         $user = new User();
         $form = $this->createForm(RegistrationType::class, $user);
-
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $user = $form->getData();
-
             if ($form->get('roleChoice')->getData() == 'ROLE_PROPRIETAIRE') {
                 if ($form->get('roles')->getData() == ['ROLE_CONSEIL']) {
                     $user->setRoles(['ROLE_PROPRIETAIRE', 'ROLE_CONSEIL']);
@@ -118,7 +116,6 @@ class SecurityController extends AbstractController
                 }
             } else {
                 if ($form->get('roles')->getData() == ['ROLE_CONSEIL']) {
-                    // Ici, vous pouvez gérer l'erreur comme vous le souhaitez, par exemple en ajoutant un message flash
                     $this->addFlash('danger', 'Un locataire ne peut pas être membre du conseil.');
                 } else {
                     $user->setRoles(['ROLE_LOCATAIRE']);
@@ -136,7 +133,7 @@ class SecurityController extends AbstractController
                 'app_verify_email',
                 $user->getId(),
                 $user->getEmail(),
-                ['id' => $user->getId()] // Ajoutez l'ID de l'utilisateur comme paramètre de requête
+                ['id' => $user->getId()]
             );
 
             $confirmationUrl = $signatureComponents->getSignedUrl();
@@ -148,10 +145,10 @@ class SecurityController extends AbstractController
                 ->htmlTemplate('pages/emails/confirmation.html.twig')
                 ->context([
                     'confirmationUrl' => $confirmationUrl,
-                    // ...
+                    'welcomeMessage' => 'Bienvenue sur l\'application de gestion de votre résidence. 
+                    Votre compte a bien été créé. Veuillez cliquer sur ce lien pour entrer votre mot de passe 
+                    et vous connecter :' . $confirmationUrl,
                 ]);
-
-            dd($confirmationUrl);
 
             $mailer->send($email);
 
@@ -165,6 +162,15 @@ class SecurityController extends AbstractController
         ]);
     }
 
+    /**
+     * Modifier le mot de passe
+     *
+     * @param Request $request
+     * @param UserRepository $repository
+     * @param VerifyEmailHelperInterface $verifyEmailHelper
+     * @param EntityManagerInterface $manager
+     * @return Response
+     */
     #[Route('/verify/email', name: 'app_verify_email', methods: ['GET'])]
     public function verifyUserEmail(
         Request $request,
@@ -174,14 +180,16 @@ class SecurityController extends AbstractController
     ): Response {
         $id = $request->query->get('id');
         $token = $request->query->get('token');
-
+        
         try {
             $verifyEmailHelper->validateEmailConfirmation($request->getUri(), $id, $token);
         } catch (VerifyEmailExceptionInterface $exception) {
-            // L'URL est invalide ou a expiré - gérer l'erreur
+            $this->addFlash('danger', $exception->getReason());
+            return $this->redirectToRoute('app_login');
         }
 
         $user = $repository->find($id);
+        
         if (null === $user) {
             $this->addFlash('danger', 'L\'utilisateur n\'existe pas.');
             return $this->redirectToRoute('app_login');
@@ -196,16 +204,24 @@ class SecurityController extends AbstractController
         return $this->redirectToRoute('app_first_password', ['id' => $user->getId()]);
     }
 
-    // methode qui permet de changer le mot de passe la premiere fois que l'utilisateur se connecte
-    #[Route('/changer-mot-de-passe', name: 'app_first_password', methods: ['GET', 'POST'])]
+    /**
+     * Changer le mot de passe la première fois que l'utilisateur se connecte
+     *
+     * @param Request $request
+     * @param UserRepository $userRepository
+     * @param EntityManagerInterface $manager
+     * @return Response
+     */
+    #[Route('/changer-mot-de-passe/{id}', name: 'app_first_password', methods: ['GET', 'POST'])]
     public function editPassword(
         Request $request,
         UserRepository $userRepository,
-        EntityManagerInterface $manager
+        EntityManagerInterface $manager,
+        $id 
     ): Response {
         $id = $request->query->get('id');
         $user = $userRepository->find($id);
-    
+
         if (!$user) {
             throw $this->createNotFoundException('Utilisateur non trouvé');
         }
