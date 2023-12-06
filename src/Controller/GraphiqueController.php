@@ -37,18 +37,18 @@ class GraphiqueController extends AbstractController
                     ->getQuery()
                     ->getResult());
                 $nbProblematiqueResolu[$anneeAjout] = count($problematiqueRepository->createQueryBuilder('p')
-                    ->join('p.suiviProblematiques', 's') // Utilisez l'association correcte
+                    ->join('p.suiviProblematiques', 's') 
                     ->where('p.date_ajout LIKE :annee')
-                    ->andWhere('s.etat IN (:etats)') // Utilisez le champ 'etat' de 'SuiviProblematique'
+                    ->andWhere('s.etat IN (:etats)') 
                     ->setParameter('annee', $anneeAjout . '%')
                     ->setParameter('etats', ['Résolu'])
                     ->getQuery()
                     ->getResult());
 
                 $nbProblematiqueNonResolu[$anneeAjout] = count($problematiqueRepository->createQueryBuilder('p')
-                    ->join('p.suiviProblematiques', 's') // Utilisez l'association correcte
+                    ->join('p.suiviProblematiques', 's') 
                     ->where('p.date_ajout LIKE :annee')
-                    ->andWhere('s.etat IN (:etats)') // Utilisez le champ 'etat' de 'SuiviProblematique'
+                    ->andWhere('s.etat IN (:etats)') 
                     ->setParameter('annee', $anneeAjout . '%')
                     ->setParameter('etats', ['Non résolu'])
                     ->getQuery()

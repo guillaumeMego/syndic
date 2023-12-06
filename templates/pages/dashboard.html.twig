@@ -146,13 +146,13 @@
     document.addEventListener('DOMContentLoaded', () => {
         let calendarEl = document.getElementById('calendar');
     
-        fetch('/calendar-events') // Remplacez ceci par l'URL qui renvoie le JSON
+        fetch('/calendar-events')
             .then(response => response.json())
             .then(data => {
                 let calendar = new FullCalendar.Calendar(calendarEl, {
                     defaultView: 'dayGridMonth',
                     editable: true,
-                    events: data, // Utilisez les données récupérées pour les événements
+                    events: data,
                     headerToolbar: {
                         start: 'prev,next today',
                         center: 'title',
