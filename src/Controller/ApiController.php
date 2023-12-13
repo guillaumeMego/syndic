@@ -38,7 +38,7 @@ class ApiController extends AbstractController
                     'nom' => $problematique->getAuteur() ? $problematique->getAuteur()->getNom() : null,
                     'prenom' => $problematique->getAuteur() ? $problematique->getAuteur()->getPrenom() : null,
                     'email' => $problematique->getAuteur() ? $problematique->getAuteur()->getEmail() : null,
-                    'role' => $problematique->getAuteur() ? $problematique->getAuteur()->getRoles() : null, 
+                    'role' => $problematique->getAuteur() ? $problematique->getAuteur()->getRoles() : null,
                     'lien' => [
                         'self' => '/api/residents/' . $problematique->getAuteur()->getId(),
                     ],
@@ -48,26 +48,29 @@ class ApiController extends AbstractController
                     'etat' => $problematique->getSuiviProblematiques() ? $problematique->getSuiviProblematiques()->getEtat() : null,
                     'date modification' => $problematique->getSuiviProblematiques() ? $problematique->getSuiviProblematiques()->getDateModif() : null,
                     'Membre validateur' => [
-                        'id' => $problematique->getSuiviProblematiques() && $problematique->getSuiviProblematiques()->getMembreValidateur() 
-                        ? $problematique->getSuiviProblematiques()->getMembreValidateur()->getId() : null,
-                        'nom' => $problematique->getSuiviProblematiques() && $problematique->getSuiviProblematiques()->getMembreValidateur() 
-                        ? $problematique->getSuiviProblematiques()->getMembreValidateur()->getNom() : null,
-                        'prenom' => $problematique->getSuiviProblematiques() && $problematique->getSuiviProblematiques()->getMembreValidateur() 
-                        ? $problematique->getSuiviProblematiques()->getMembreValidateur()->getPrenom() : null,
-                        'email' => $problematique->getSuiviProblematiques() && $problematique->getSuiviProblematiques()->getMembreValidateur() 
-                        ? $problematique->getSuiviProblematiques()->getMembreValidateur()->getEmail() : null,
-                        'role' => $problematique->getSuiviProblematiques() && $problematique->getSuiviProblematiques()->getMembreValidateur() 
-                        ? $problematique->getSuiviProblematiques()->getMembreValidateur()->getRoles() : null,
+                        'id' => $problematique->getSuiviProblematiques() && $problematique->getSuiviProblematiques()->getMembreValidateur()
+                            ? $problematique->getSuiviProblematiques()->getMembreValidateur()->getId() : null,
+                        'nom' => $problematique->getSuiviProblematiques() && $problematique->getSuiviProblematiques()->getMembreValidateur()
+                            ? $problematique->getSuiviProblematiques()->getMembreValidateur()->getNom() : null,
+                        'prenom' => $problematique->getSuiviProblematiques() && $problematique->getSuiviProblematiques()->getMembreValidateur()
+                            ? $problematique->getSuiviProblematiques()->getMembreValidateur()->getPrenom() : null,
+                        'email' => $problematique->getSuiviProblematiques() && $problematique->getSuiviProblematiques()->getMembreValidateur()
+                            ? $problematique->getSuiviProblematiques()->getMembreValidateur()->getEmail() : null,
+                        'role' => $problematique->getSuiviProblematiques() && $problematique->getSuiviProblematiques()->getMembreValidateur()
+                            ? $problematique->getSuiviProblematiques()->getMembreValidateur()->getRoles() : null,
                     ],
                     'lien' => [
-                        'self' => $problematique->getSuiviProblematiques() ? '/api/suivi-problematiques/' 
-                        . $problematique->getSuiviProblematiques()->getId() : null,
+                        'self' => $problematique->getSuiviProblematiques() ? '/api/suivi-problematiques/'
+                            . $problematique->getSuiviProblematiques()->getId() : null,
                     ],
                 ]
             ];
         }
         $response = new JsonResponse($data);
         $response->headers->set('Access-Control-Allow-Origin', '*');
+        $response->headers->set("Content-Type: application/json; charset=UTF-8", true);
+        $response->headers->set('Access-Control-Allow-Methods', 'GET');
+        $response->headers->set("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With", true);
         return $response;
     }
 
